@@ -1,10 +1,11 @@
-use diesel::prelude::*;
+use diesel::{self, prelude::*};
 
 use rocket_contrib::json::Json;
 
 use std::collections::HashMap;
 
-use crate::models::NewEntry;
+use crate::models::{Entry, NewEntry};
+use crate::schema;
 use crate::DbConn;
 
 use rocket::config::Datetime;
@@ -31,7 +32,7 @@ pub fn create(conn: DbConn, entry: Form<NewEntry>) -> Result<String, String> {
     let inserted_rows = diesel::insert_into(schema::entries::table)
         .values(&entry.0)
         .execute(&conn.0)
-        .map(|err| -> String {
+        .map_err(|err| -> String {
             format!("Error inserting row: {:?}", err);
             "Error inserting row into database".into()
         })?;

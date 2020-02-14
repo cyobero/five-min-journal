@@ -1,6 +1,9 @@
-use super::schema::entries;
 use rocket::config::Datetime;
 use rocket::request::FromForm;
+
+use crate::schema::entries;
+
+use serde::{Deserialize, Serialize};
 
 #[derive(Queryable)]
 pub struct Entry {
@@ -12,10 +15,17 @@ pub struct Entry {
     pub entry_date: Datetime,
 }
 
-#[derive(Insertable, FromForm)]
+#[derive(Insertable, FromForm, Deserialize)]
 #[table_name = "entries"]
 pub struct NewEntry {
     pub title: String,
     pub question: String,
     pub answer: String,
+}
+
+#[derive(Debug, Insertable, FromForm, Serialize)]
+pub struct NewEntryForm {
+    title: String,
+    question: String,
+    answer: String,
 }
