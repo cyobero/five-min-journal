@@ -1,40 +1,28 @@
 use super::schema::entries;
+use rocket::config::Datetime;
 
-use std::time::SystemTime;
-
-use rocket::http::RawStr;
-use rocket::request::{FromForm, FromFormValue};
-
-#[derive(Debug, FromFormValue)]
-pub enum Question {
-    grateful_for(String),
-    make_today_great(String),
-    affirrmation(String),
-    amazing_thing(String),
-    improve_today(String),
-}
-
-#[derive(FromForm, Queryable)]
+#[derive(Queryable)]
 pub struct Entry {
-    pub id: u8,
-    pub title: Option<String>,
-    pub question: Question,
+    pub id: i32,
+    pub title: String,
+    pub question: String,
     pub answer: String,
-    pub entry_date: SystemTime,
+    pub morning: bool,
+    pub entry_date: Datetime,
 }
 
 #[derive(Insertable)]
 #[table_name = "entries"]
 pub struct NewEntry<'a> {
-    pub title: &'a Option<String>,
-    pub question: &'a Question,
+    pub title: &'a str,
+    pub question: &'a str,
     pub answer: &'a str,
 }
 
-#[derive(Debug, FromForm)]
-pub struct EntryFormInput {
-    title: Option<String>,
+#[derive(Debug)]
+pub struct EntryFormInput<'a> {
+    title: &'a str,
     // can we make `question` a drop down?
-    question: Question,
-    answer: String,
+    question: &'a str,
+    answer: &'a str,
 }
