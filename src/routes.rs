@@ -1,7 +1,5 @@
 use diesel::{self, prelude::*};
 
-use rocket_contrib::json::Json;
-
 use std::collections::HashMap;
 
 use crate::models::{Entry, NewEntry};
@@ -11,6 +9,8 @@ use crate::DbConn;
 use rocket::config::Datetime;
 use rocket::request::Form;
 use rocket_contrib::templates::Template;
+
+use serde::Serialize;
 
 #[derive(Serialize)]
 struct TemplateContext {
@@ -38,4 +38,11 @@ pub fn create(conn: DbConn, entry: Form<NewEntry>) -> Result<String, String> {
         })?;
 
     Ok(format!("inserted {} row(s)", inserted_rows))
+}
+
+#[get("/entry?<id>")]
+pub fn retrieve(conn: DbConn, id: i32) -> Template {
+    use crate::schema::entries::dsl::*;
+
+    let entry = entries.filter(id.eq(id)).get_result(&conn);
 }
